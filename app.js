@@ -1,5 +1,6 @@
 const yargs = require('yargs');
 const geocode = require('./geocode/geocode');
+const weather = require('./weather/weather');
 
 const argv = yargs
     .options({
@@ -14,4 +15,27 @@ const argv = yargs
     .alias('help', 'h')
     .argv;
 
-geocode.geocodeAddress(argv.address);
+geocode.geocodeAddress(argv.address, (errorMessage, results) => {
+    if (errorMessage) {
+        console.log(errorMessage);
+    } else {
+        console.log(results.address);
+        console.log(results.adminArea5Type + ": " +  results.city);
+        console.log(results.adminArea3Type + ": " + results.state);
+        console.log(results.adminArea1Type + ": " + results.county);
+        console.log(results.adminArea4);
+        console.log("Postal code: " + results.postalCode);
+
+        weather.getWeather(results.latitude, results.longitude, (errorMessage, weatherResults) => {
+            if (errorMessage) {
+                console.log(errorMessage);
+            } else {
+                console.log(`It's currently ${weatherResults.temperature}. It feels like ${weatherResults.apperentTemperature}.`);
+            }
+        });
+    }
+});
+
+
+
+

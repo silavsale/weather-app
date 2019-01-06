@@ -1,6 +1,6 @@
 const request = require('request');
 
-var geocodeAddress = (address) => {
+var geocodeAddress = (address, callback) => {
 
     var encodedAddress = encodeURIComponent(address);
 
@@ -10,17 +10,27 @@ var geocodeAddress = (address) => {
     }, (error, response, body) => {
 
         if (error) {
-            console.log('Unable to connect to Google servers.');
+            callback('Unable to connect to Google servers.');
         } else if (body.status === "ZERO RESULTS") {
-            console.log('Unable to find that address.');
+            callback('Unable to find that address.');
         } else {
-            console.log(`Address: ${body.results[0].locations[0].street}`);
-            console.log(`City: ${body.results[0].locations[0].adminArea5}`);
-            console.log(`State: ${body.results[0].locations[0].adminArea3}`);
-            console.log(`County: ${body.results[0].locations[0].adminArea1}`);
-            console.log(`Latitude: ${body.results[0].locations[0].latLng.lat}`);
-            console.log(`Longitude: ${body.results[0].locations[0].latLng.lng}`);
-            console.log(`mapUrl: ${body.results[0].locations[0].mapUrl}`);
+            callback(undefined, {
+                address: body.results[0].locations[0].street,
+                adminArea6: body.results[0].locations[0].adminArea6,
+                adminArea6Type: body.results[0].locations[0].adminArea6Type,
+                adminArea4: body.results[0].locations[0].adminArea4,
+                adminArea5Type: body.results[0].locations[0].adminArea5Type,
+                adminArea3Type: body.results[0].locations[0].adminArea3Type,
+                adminArea1Type: body.results[0].locations[0].adminArea1Type,
+                postalCode: body.results[0].locations[0].postalCode,
+                geocodeQualityCode: body.results[0].locations[0].geocodeQualityCode,
+                geocodeQuality: body.results[0].locations[0].geocodeQuality,
+                city: body.results[0].locations[0].adminArea5,
+                state: body.results[0].locations[0].adminArea3,
+                county: body.results[0].locations[0].adminArea1,
+                latitude: body.results[0].locations[0].latLng.lat,
+                longitude: body.results[0].locations[0].latLng.lng
+            });
         }
     });
 };
